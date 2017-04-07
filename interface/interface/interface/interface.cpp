@@ -3,7 +3,8 @@
 
 Interface::Interface( QWidget *parent ) : QWidget( parent ),
                                           ui( new Ui::Interface ),
-                                          cameraWidget( new CameraWidget )
+                                          cameraWidget( new CameraWidget ),
+                                          speechText("")
 {
     this->setGraph( new Graph( this ) );
     this->setCamera( new Camera( this ) );
@@ -14,8 +15,6 @@ Interface::Interface( QWidget *parent ) : QWidget( parent ),
     ui->setupUi( this );
     ui->scrollArea->setFixedHeight( SCROLL_AREA_HEIGHT );
     this->setStyle();
-
-    connect(this->ui->pbstart, SIGNAL( pressed() ), this->getCamera(), SLOT(processStart()));
 
     connect( this->ui->calibrateButton,
              SIGNAL( pressed() ),
@@ -225,12 +224,18 @@ void Interface::createAndSet( Nodo *node )
         sentence.append( " " );
         sentence.append( node->getText().toUpper() );
         this->ui->sentenceLabel->setText( sentence );
+
+        speechText = removeAccents(sentence.replace(" ", " , "));
+        QStringList signosIrreproducibles;
+        signosIrreproducibles << "!" << "?" << "\u00BF" << "\u00A1" <<  "¡";
+        speechText = removePunctuationCharacters(speechText, signosIrreproducibles);
     }
 
     if( node->getChildren().size() == 1 &&
-        node->getChildren().at( 0 ) == "none" )
+        node->getChildren().at( 0 ) == "none" && !speechText.isEmpty() )
     {
-        //this->getSpeaker()->read( this->ui->sentenceLabel->text() );
+        // reproduce la oracion en cada nueva seleccion de icon.
+        this->getSpeaker()->read( speechText );
         return;
     }
 
@@ -247,6 +252,49 @@ void Interface::createAndSet( Nodo *node )
     }
 
     this->getCamera()->setSize( node->getChildren().size() );
+}
+
+// remueve los acentos de las palabaras que vienen como parametro
+QString Interface::removeAccents(QString s){
+    QString diacriticLetters_;
+    QStringList noDiacriticLetters_;
+
+
+    if (diacriticLetters_.isEmpty()) {
+        diacriticLetters_ = QString::fromUtf8("ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ");
+        noDiacriticLetters_ << "S"<<"OE"<<"Z"<<"s"<<"oe"<<"z"<<"Y"<<"Y"<<"u"<<"A"<<"A"<<"A"<<"A"<<"A"<<"A"<<"AE"<<"C"<<"E"<<"E"<<"E"<<"E"<<"I"<<"I"<<"I"<<"I"<<"D"<<"N"<<"O"<<"O"<<"O"<<"O"<<"O"<<"O"<<"U"<<"U"<<"U"<<"U"<<"Y"<<"s"<<"a"<<"a"<<"a"<<"a"<<"a"<<"a"<<"ae"<<"c"<<"e"<<"e"<<"e"<<"e"<<"i"<<"i"<<"i"<<"i"<<"o"<<"n"<<"o"<<"o"<<"o"<<"o"<<"o"<<"o"<<"u"<<"u"<<"u"<<"u"<<"y"<<"y";
+    }
+
+    QString output = "";
+    for (int i = 0; i < s.length(); i++) {
+        QChar c = s[i];
+        int dIndex = diacriticLetters_.indexOf(c);
+        if (dIndex < 0) {
+            output.append(c);
+        } else {
+            QString replacement = noDiacriticLetters_[dIndex];
+            output.append(replacement);
+        }
+    }
+
+    return output;
+}
+
+// remueve los signos/palabras de s que y que estan en ls
+QString Interface::removePunctuationCharacters(QString s,QStringList ls){
+    for(int i = 0; i < ls.length(); i++)
+        s = s.replace(ls.at(i), "");
+    return s;
+}
+
+QString Interface::getSpeechText() const
+{
+    return speechText;
+}
+
+void Interface::setSpeechText(const QString &value)
+{
+    speechText = value;
 }
 
 /**
@@ -304,3 +352,16 @@ void Interface::phraseReset()
     this->ui->sentenceLabel->clear();
     this->createAndSet( this->getGraph()->get( INITIAL_NODE_ID ) );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

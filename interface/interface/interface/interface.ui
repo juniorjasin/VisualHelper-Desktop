@@ -39,8 +39,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>463</width>
-        <height>68</height>
+        <width>467</width>
+        <height>87</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2" rowstretch="0">
@@ -76,7 +76,7 @@
      </property>
     </spacer>
    </item>
-   <item row="7" column="0" colspan="2">
+   <item row="6" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">
@@ -150,13 +150,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="pbstart">
-     <property name="text">
-      <string>start process</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>

@@ -5,7 +5,7 @@
 Camera::Camera( QObject *parent ) :
     QObject( parent ), isCalibrated( false ), countFrameFaceless( 0 )
 {
-    this->setVideoCapture( new VideoCapture( 1 ) );
+    this->setVideoCapture( new VideoCapture( 0 ) );
     this->setSceneTimer( new QTimer( this ) );
     this->setCameraTexture( new Mat() );
 
@@ -24,6 +24,7 @@ Camera::Camera( QObject *parent ) :
     this->setSize( 0 );
 
     connect( this->getSceneTimer(), SIGNAL( timeout() ), SLOT( process() ) );
+    getSceneTimer()->start(10);
 
 }
 
@@ -97,10 +98,6 @@ void Camera::setSmiling( bool value )
     smiling = value;
 }
 
-void Camera::processStart(){
-    this->getSceneTimer()->start(100);
-}
-
 void Camera::process()
 {
     if(!this->getVideoCapture()->isOpened()){
@@ -110,7 +107,7 @@ void Camera::process()
 
     if(this->getCameraTexture()->empty()){
         qDebug() << "frame vacio";
-        return;
+        //return; si esta esto, no puede levantar la camara nunca
     }
 
     this->getVideoCapture()->operator >>( *this->getCameraTexture() );

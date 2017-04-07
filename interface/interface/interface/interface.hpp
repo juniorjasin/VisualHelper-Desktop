@@ -9,6 +9,7 @@
 #include <QKeyEvent>
 #include <QSound>
 #include <QDebug>
+#include <QString>
 
 #include "graph/graph.hpp"
 #include "theme/colorizer.hpp"
@@ -44,6 +45,12 @@ private:
 
     CameraWidget * cameraWidget;
 
+    // mis metodos
+    QString removeAccents(QString s);
+    QString removePunctuationCharacters(QString s, QStringList ls);
+
+    QString speechText;
+
 public:
 
     explicit Interface( QWidget *parent = NULL );
@@ -65,6 +72,9 @@ public:
     void setSpeaker( Speech *value );
 
     bool initInterface( QFile *file );
+
+    QString getSpeechText() const;
+    void setSpeechText(const QString &value);
 
 protected:
 

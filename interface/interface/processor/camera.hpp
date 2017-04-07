@@ -88,9 +88,6 @@ public slots:
 
     void calibrate();
 
-    // mi slot prueba
-    void processStart();
-
 signals:
 
     void positionDetected( int index );
